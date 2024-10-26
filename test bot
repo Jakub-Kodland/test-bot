@@ -1,0 +1,47 @@
+require('dotenv').config();
+const { Client, GatewayIntentBits, Events } = require('discord.js');
+const axios = require('axios');
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+
+// Command prefix
+const prefix = '!';
+
+// Random facts and quotes arrays
+const facts = [
+    "Bananas are berries, but strawberries aren't.",
+    "Honey never spoils.",
+    "Octopuses have three hearts.",
+    "A group of flamingos is called a 'flamboyance.'"
+];
+
+const quotes = [
+    "Be yourself; everyone else is already taken. — Oscar Wilde",
+    "In three words I can sum up everything I've learned about life: it goes on. — Robert Frost",
+    "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment. — Ralph Waldo Emerson"
+];
+
+// Event listeners
+client.once(Events.ClientReady, () => {
+    console.log(`Logged in as ${client.user.tag}!`);
+});
+
+client.on(Events.MessageCreate, message => {
+    if (!message.content.startsWith(prefix) || message.author.bot) return;
+
+    const args = message.content.slice(prefix.length).trim().split(/ +/);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'fact') {
+        const randomFact = facts[Math.floor(Math.random() * facts.length)];
+        message.channel.send(randomFact);
+    } else if (command === 'quote') {
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        message.channel.send(randomQuote);
+    } else {
+        message.channel.send('Unknown command. Use !fact or !quote.');
+    }
+});
+
+// Login to Discord with your app's token
+client.login(process.env.DISCORD_TOKEN);
